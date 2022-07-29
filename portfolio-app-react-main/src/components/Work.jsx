@@ -1,48 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import ImageCard from './ImageCard';
 import ImageSearch from './ImageSearch';
-import ReactPaginate from 'react-paginate';
 
 const Work = () => {
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [term, setTerm] = useState('');
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [imagesPerPage, setImagesPerPage] = useState(10);
-  const [pageCount, setpageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  let limit = 5;
 
   useEffect(() => {
     const getImages = async () => {
       const res = await fetch(
-        `https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${term}&image_type=photo&pretty=true`
+        `https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${term}&image_type=photo&pretty=true&page=${currentPage}`
       );
       const data = await res.json();
-      const total = res.headers.get("x-total-count");
-      setpageCount(Math.ceil(total / limit));
       setImages(data.hits);
       setIsLoading(false);
     };
     getImages();
-  }, [limit, term]);
+  }, [currentPage, term]);
 
-  const fetchImages = async (currentPage) => {
-    const res = await fetch(
-      `https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${term}&image_type=photo&pretty=true`)
-    const data = await res.json();
-    return data;
-  };
+    const nextPage = () => 
+      {
+      if (currentPage < 5) {
+        setCurrentPage(currentPage + 1)
+      } else {
+        setCurrentPage(5)
+      }
+    }
 
-  const handlePageClick = async (data) => {
-    console.log(data.selected);
+    const prevPage = () => 
+      {
+        if (currentPage > 1) {
+        setCurrentPage(currentPage - 1)
+      } else {
+        setCurrentPage(1)
+      }
+    }
 
-    let currentPage = data.selected + 1;
-
-    const commentsFormServer = await fetchImages(currentPage);
-
-    setImages(commentsFormServer);
-  };
+    const page1 = () => setCurrentPage(1)
+    const page2 = () => setCurrentPage(2)
+    const page3 = () => setCurrentPage(3)
+    const page4 = () => setCurrentPage(4)
+    const page5 = () => setCurrentPage(5)
 
     return (
       <div className="container mx-auto mb-4">
@@ -55,81 +56,18 @@ const Work = () => {
           <ImageCard key={images.id} image={images} />
         ))}
       </div>}
+      <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <button onClick={prevPage} className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</button>
+        <button onClick={page1} className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">1</button>
+        <button onClick={page2} className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">2</button>
+        <button onClick={page3} className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">3</button>
+        <button onClick={page4} className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">4</button>
+        <button onClick={page5} className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">5</button>
+        <button onClick={nextPage} className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</button>
+      </div>
+      </div>
 
-      <ReactPaginate
-        previousLabel={"previous"}
-        nextLabel={"next"}
-        breakLabel={"..."}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={3}
-        onPageChange={handlePageClick}
-        containerClassName={"pagination justify-content-center"}
-        pageClassName={"page-item"}
-        pageLinkClassName={"page-link"}
-        previousClassName={"page-item"}
-        previousLinkClassName={"page-link"}
-        nextClassName={"page-item"}
-        nextLinkClassName={"page-link"}
-        breakClassName={"page-item"}
-        breakLinkClassName={"page-link"}
-        activeClassName={"active"}
-      />
-
-      {/* <Pagination imagesPerPage={imagesPerPage} totalImages={images.length} /> */}
-    </div>
     );
-
-//   return (
-//     <div name='work' className='w-full md:h-screen text-[#1d3557] bg-[#f1faee]'>
-//       <div className='max-w-[1000px] mx-auto p-4 flex flex-col justify-center w-full h-full'>
-//         <div className='pb-8'>
-//           <p className='text-4xl font-bold inline border-b-4 text-[#1d3557] border-pink-600'>
-//             Work
-//           </p>
-//           <p className='pt-6 pb-3'>Check out some of my recent work</p>
-//         </div>
-
-// {/* Container */}
-//         <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
-
-//             {/* Grid Item */}
-//           <div
-//             style={{ backgroundImage: `url(${WorkImg})` }}
-//             className='shadow-lg shadow-[#040c16] group container rounded-md flex justify-center items-center mx-auto content-div'
-//           >
-//           </div>
-//           <div
-//             style={{ backgroundImage: `url(${realEstate})` }}
-//             className='shadow-lg shadow-[#040c16] group container rounded-md flex justify-center items-center mx-auto content-div'
-//           >
-//           </div>
-//             {/* Grid Item */}
-//           <div
-//             style={{ backgroundImage: `url(${WorkImg})` }}
-//             className='shadow-lg shadow-[#040c16] group container rounded-md flex justify-center items-center mx-auto content-div'
-//           >
-//           </div>
-//           <div
-//             style={{ backgroundImage: `url(${realEstate})` }}
-//             className='shadow-lg shadow-[#040c16] group container rounded-md flex justify-center items-center mx-auto content-div'
-//           >
-//           </div>
-//             {/* Grid Item */}
-//           <div
-//             style={{ backgroundImage: `url(${WorkImg})` }}
-//             className='shadow-lg shadow-[#040c16] group container rounded-md flex justify-center items-center mx-auto content-div'
-//           >
-//           </div>
-//           <div
-//             style={{ backgroundImage: `url(${realEstate})` }}
-//             className='shadow-lg shadow-[#040c16] group container rounded-md flex justify-center items-center mx-auto content-div'
-//           >
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-};
+}
 
 export default Work;
